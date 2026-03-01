@@ -8,11 +8,14 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
-    // Defineixo la ruta arrel de l'aplicació, el primer lloc on l'usuari aterra
+    /**
+     * Gestiona exclusivament l'aterratge general de la pàgina
+     * Forma de passarel·la directa principal lligada al catàleg index dels productes
+     */
     #[Route('/', name: 'app_home')]
     public function index(): Response
     {
-        // Per evitar duplicar codi, redirigeixo directament al llistat de productes
+        // En lloc de donar una estèril vista principal (home), evito repeticions redigin directament on toca.
         return $this->redirectToRoute('app_product_index');
     }
 }

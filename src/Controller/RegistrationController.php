@@ -14,38 +14,39 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RegistrationController extends AbstractController
 {
-    // Codi que controla el registre dels meus nous usuaris
+    /**
+     * Mostra i tramita el procés de registre d'un nou compte d'usuari
+     * Accessible únicament per a convidats que desitgin donar-se d'alta com a membres
+     */
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, Security $security): Response
     {
-        // Creo una nova entitat on ficare les coses de l'usuari
         $user = new User();
-        // Genero el meu formulari basant-me en els camps que vaig demanar per el "RegistrationFormType"
+        // Genero el meu formulari de registre acoblat al voltant dels requeriments indicats
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
-        // Contemplo que ha passat per sota via el botó d'enviament...
+        // Si han superat els paràmetres com l'acceptació de termes o les validacions de l'Entity
         if ($form->isSubmitted() && $form->isValid()) {
-            // Hashejo la password secreta per seguretat i l'amago codificada perquè si hi ha un atac no ho puguin llegir!
+            // Empro el servei de Symfony per emmascarar i protegir irreversiblement la contrasenya recollida de forma plana
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
-                    $form->get('plainPassword')->getData() // Agafo la contrasenya oculta
+                    $form->get('plainPassword')->getData() // Absorbeixo la contrasenya del camp específic
                 )
             );
 
-            // Afegeixo aquest compte de l'usuari a la meva base de dades
+            // Gravo oficialment a la BDD de Symfopop la configuració d'aquest nou membre
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Envío el Flash verd
+            // Allibero l'alerta verda de reconeixement al bloc superior sobre haver completat l'enllaç
             $this->addFlash('success', 'Registre completat amb èxit! Has iniciat sessió automàticament.');
 
-            // L'usuari acaba de fer registre total... Així per simplitzar el procés el lligo com que ja ha entrat d'un sol cop. Directe per jugar.
+            // Compleixo l'objectiu estricte introduint-lo connectat directament a la sessió actual mitjançant login nativitzat
             return $security->login($user, \App\Security\LoginFormAuthenticator::class, 'main') ?: $this->redirectToRoute('app_home');
         }
 
-        // Mostro en general tota la base en format Twig
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
         ]);

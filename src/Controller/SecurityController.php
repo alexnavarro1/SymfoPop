@@ -9,7 +9,10 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
-    // Defineixo la ruta pel formulari de login
+    /**
+     * Mostra i gestiona el formulari d'inici de sessió de l'aplicació
+     * Accessible per a tothom, però repèl els usuaris que ja estan autenticats
+     */
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
@@ -18,23 +21,25 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        // Obtinc l'error d'inici de sessió (si n'hi ha algun)
+        // Obtinc l'error d'inici de sessió (si n'hi ha algun llançat pel firewall)
         $error = $authenticationUtils->getLastAuthenticationError();
-        // Recupero l'últim correu electrònic que he introduït per no haver de tornar-lo a escriure
+        // Recupero l'últim correu electrònic introduït per evitar forçar a l'usuari a tornar-lo a escriure
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        // Renoritzo la vista amb les dades
         return $this->render('security/login.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error,
         ]);
     }
 
-    // Ruta per tancar la sessió
+    /**
+     * Tanca la sessió activa de l'usuari actual
+     * Interceptat de forma nativa pel mòdul de seguretat de Symfony
+     */
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
     {
-        // Symfony s'encarrega d'interceptar aquesta ruta a través del firewall configurat, així que no faig res aquí
-        throw new \LogicException('Mètode interceptat pel logout key del firewall.');
+        // Aquest codi mai no s'executarà ja que el firewall "main" intercepta aquesta ruta directament
+        throw new \LogicException('Aquest mètode es troba interceptat per la clau "logout" configurada dins del firewall.');
     }
 }
