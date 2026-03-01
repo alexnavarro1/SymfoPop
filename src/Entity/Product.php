@@ -19,25 +19,25 @@ class Product
 
     // Titols de nom de Producte limitats d'un minim obligatori 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank] // Em protegiré perquè mai vingui buit en formularis
-    #[Assert\Length(min: 3, max: 255)] // Requereixo precisio i dades extenses
+    #[Assert\NotBlank(message: 'Aquest camp de títol no pot estar buit.')] // Em protegiré perquè mai vingui buit en formularis
+    #[Assert\Length(min: 3, max: 255, minMessage: 'El títol ha de tenir com a mínim {{ limit }} caràcters.', maxMessage: 'El títol pot tenir com a màxim {{ limit }} caràcters.')] // Requereixo precisio i dades extenses
     private ?string $title = null;
 
     // Paragraf complet necessari d'almenys deu paraules sense falles.
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 10)]
+    #[Assert\NotBlank(message: 'La descripció és obligatòria.')]
+    #[Assert\Length(min: 10, minMessage: 'La descripció ha de tenir com a mínim {{ limit }} caràcters per ser vàlida.')]
     private ?string $description = null;
 
     // Amb un màxim preu de valors i només positius reals formatats
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Assert\NotBlank]
-    #[Assert\Positive] // Res de deutes dolents!
+    #[Assert\NotBlank(message: 'El preu no es pot deixar en blanc.')]
+    #[Assert\Positive(message: 'El preu ha de ser sempre un valor positiu.')] // Res de deutes dolents!
     private ?string $price = null;
 
     // Un enllaç si tinc a foto o puc obviar null en base
     #[ORM\Column(length: 500, nullable: true)]
-    #[Assert\Url] // Forço ràpid d'una URL d'imatge vàlida a priori
+    #[Assert\Url(message: 'Aquesta aparença no correspon a una URL vàlida d\'una imatge.')] // Forço ràpid d'una URL d'imatge vàlida a priori
     private ?string $image = null;
 
     // L'edat que tindrà a ser publicada la creació (s'afegeix sola autament per defecte al codig constructiu)
@@ -49,7 +49,7 @@ class Product
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
 
-    // Em configuro una data "Ara/Hui Actual!" a la hora de creació original per defecte al invocar!
+    // Em configuro una data  a la hora de creació original per defecte al crear un nou producte, així no em quedaré mai sense data de creació i serà automàtica.
     public function __construct()
     {
         $this->createdAt = new \DateTime();

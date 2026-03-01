@@ -101,8 +101,13 @@ class ProductController extends AbstractController
      * Accessible per a tots els usuaris gràcies al ParamConverter
      */
     #[Route('/{id}', name: 'app_product_show', methods: ['GET'])]
-    public function show(Product $product): Response
+    public function show(?Product $product): Response
     {
+        // Gestionem l'error 404 si el producte no existeix directament
+        if (!$product) {
+            throw $this->createNotFoundException('El producte que intentes visualitzar no existeix al catàleg.');
+        }
+
         // Engeguem la visualització passsant el producte trobat per "Entity Param Converter" al twig
         return $this->render('product/show.html.twig', [
             'product' => $product,
@@ -115,8 +120,13 @@ class ProductController extends AbstractController
      */
     #[Route('/{id}/edit', name: 'app_product_edit', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')] // Requereix usuari autenticat
-    public function edit(Request $request, Product $product, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, ?Product $product, EntityManagerInterface $entityManager): Response
     {
+        // Gestionem de retruc l'error 404
+        if (!$product) {
+            throw $this->createNotFoundException('El producte que intentes editar ja no existeix.');
+        }
+
         // Validem que l'usuari actual sigui el propietari del producte
         if ($product->getOwner() !== $this->getUser()) {
             throw $this->createAccessDeniedException('No pots editar aquest producte perquè no ets el seu propietari.');
@@ -146,8 +156,13 @@ class ProductController extends AbstractController
      */
     #[Route('/{id}', name: 'app_product_delete', methods: ['POST'])]
     #[IsGranted('ROLE_USER')] // Requereix usuari autenticat
-    public function delete(Request $request, Product $product, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, ?Product $product, EntityManagerInterface $entityManager): Response
     {
+        // Protegim primer amb 404
+        if (!$product) {
+            throw $this->createNotFoundException('No s\'ha pogut trobar el producte per esborrar.');
+        }
+
         // Validem que l'usuari actual sigui el propietari del producte a esborrar
         if ($product->getOwner() !== $this->getUser()) {
             throw $this->createAccessDeniedException('No tens permís per esborrar explícitament aquest producte.');
