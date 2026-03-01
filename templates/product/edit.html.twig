@@ -1,0 +1,49 @@
+{# Afegeixo l'arrel de plantilles #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Producte - SymfoPop{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    {# Afegeixo una simple icona de llapis acompanyada del cartell groc per diferenciar l'edició vs nova creació. #}
+                    <h1 class="h3 mb-4 fw-bold text-warning text-center"><i class="bi bi-pencil-square"></i> Editar Producte</h1>
+
+                    {# Preparo aquest element form que ja conté de base totes les dades del producte actual automàticament des del controlador de l'Edit per defecte! #}
+                    {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+                        <div class="mb-4">
+                            {{ form_label(form.title, null, {'label_attr': {'class': 'form-label fw-bold text-muted'}}) }}
+                            {{ form_widget(form.title) }}
+                            <div class="text-danger small mt-1">{{ form_errors(form.title) }}</div>
+                        </div>
+                        {# Cada descripció i dades s'havien guardat a la base de dades i surten com a value d'aquests camps text #}
+                        <div class="mb-4">
+                            {{ form_label(form.description, null, {'label_attr': {'class': 'form-label fw-bold text-muted'}}) }}
+                            {{ form_widget(form.description) }}
+                            <div class="text-danger small mt-1">{{ form_errors(form.description) }}</div>
+                        </div>
+                        <div class="mb-4">
+                            {{ form_label(form.price, null, {'label_attr': {'class': 'form-label fw-bold text-muted'}}) }}
+                            {{ form_widget(form.price, {'attr': {'class': 'form-control form-control-lg text-success fw-bold'}}) }}
+                            <div class="text-danger small mt-1">{{ form_errors(form.price) }}</div>
+                        </div>
+                        <div class="mb-4">
+                            {{ form_label(form.image, null, {'label_attr': {'class': 'form-label fw-bold text-muted'}}) }}
+                            {{ form_widget(form.image) }}
+                            <div class="text-danger small mt-1">{{ form_errors(form.image) }}</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-5">
+                            {# Com ja estic d'un que existeix puc decidir saltar just abans a on em mostra el producte tal com es feia en el "Veure producte" #}
+                            <a href="{{ path('app_product_show', {'id': product.id}) }}" class="btn btn-outline-secondary px-4 py-2 fw-semibold">Cancel·lar</a>
+                            {# Confirmo desar cap a la base de dades on el controller farà el "Flush" sense crear una res de nou si estic autoritzat! #}
+                            <button class="btn btn-warning px-4 py-2 fw-bold text-dark" type="submit"><i class="bi bi-save2"></i> Guardar Canvis</button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

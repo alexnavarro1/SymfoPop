@@ -1,0 +1,51 @@
+{# Afegeixo l'arrel de plantilles #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Nou Producte - SymfoPop{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <h1 class="h3 mb-4 fw-bold text-primary text-center">Publicar Nou Producte</h1>
+
+                    {# Obro la definició d'inici bàsica del formulari de Symfony per tal d'iniciar el token al form-action cap aquest mateix path automàticament #}
+                    {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+                        <div class="mb-4">
+                            {# Mostro cada etiqueta (label) independent de cada quadre i l'emmotllo de classe amb el form_widget en general #}
+                            {{ form_label(form.title, null, {'label_attr': {'class': 'form-label fw-bold text-muted'}}) }}
+                            {{ form_widget(form.title) }}
+                            {# La part vermella en petit de si passa algun assert intern d'arrel (Buit) de doctrine es mostrarà aquí visualment #}
+                            <div class="text-danger small mt-1">{{ form_errors(form.title) }}</div>
+                        </div>
+                        <div class="mb-4">
+                            {{ form_label(form.description, null, {'label_attr': {'class': 'form-label fw-bold text-muted'}}) }}
+                            {{ form_widget(form.description) }}
+                            <div class="text-danger small mt-1">{{ form_errors(form.description) }}</div>
+                        </div>
+                        <div class="mb-4">
+                            {{ form_label(form.price, null, {'label_attr': {'class': 'form-label fw-bold text-muted'}}) }}
+                            {{ form_widget(form.price, {'attr': {'class': 'form-control form-control-lg text-success fw-bold'}}) }}
+                            <div class="text-danger small mt-1">{{ form_errors(form.price) }}</div>
+                        </div>
+                        {# Imatge la demano al final per no ser tan estrictament una dada de bloc complet prioritaria #}
+                        <div class="mb-4">
+                            {{ form_label(form.image, null, {'label_attr': {'class': 'form-label fw-bold text-muted'}}) }}
+                            {{ form_widget(form.image) }}
+                            <div class="text-danger small mt-1">{{ form_errors(form.image) }}</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-5">
+                            {# Torno enrere al llistat sense emmagatzemar la persistència manual si decideixo no tirar #}
+                            <a href="{{ path('app_product_index') }}" class="btn btn-outline-secondary px-4 py-2 fw-semibold">Cancel·lar</a>
+                            {# Quan clico, és submit i entra a la funcionalitat controladora #}
+                            <button class="btn btn-primary px-4 py-2 fw-bold" type="submit"><i class="bi bi-cloud-arrow-up"></i> Crear Producte</button>
+                        </div>
+                    {# I finalment concloc per afegir que ja ha acabat i qualsevol camp extern generat #}
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

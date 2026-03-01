@@ -1,0 +1,75 @@
+{# Enganxo l'estructura base del web a aquesta secció d'aplicació exclusivament #}
+{% extends 'base.html.twig' %}
+
+{# Aquesta capçalera del navagador web l'assigno depenent si tinc un títol com a variable o no #}
+{% block title %}{{ title|default('Llistat de Productes') }} - SymfoPop{% endblock %}
+
+{% block body %}
+    {# Aquest contenidor s'assegura sempre que el títol major estigui a l'esquerra preparant un petit espai al botó si apareix per "nou" producte. #}
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mb-4 gap-3">
+        <h1 class="h2 text-primary fw-bold mb-0">{{ title|default('Llistat de Productes') }}</h1>
+        {# Controlem pel simple 'show_new_button' si cal deixar apareixer la creació. #}
+        {% if show_new_button|default(false) %}
+            <a href="{{ path('app_product_new') }}" class="btn btn-primary shadow-sm"><i class="bi bi-plus-circle"></i> Nou Producte</a>
+        {% endif %}
+    </div>
+
+    {# Mostro un avís si la llista de productes que m'arriba com array està completament buida. #}
+    {% if products is empty %}
+        <div class="alert alert-info text-center shadow-sm p-4 rounded-4">
+            <i class="bi bi-info-circle fs-3 d-block mb-2 text-primary"></i>
+            <span class="fs-5">{{ empty_message|default('No s\'han trobat productes.') }}</span>
+        </div>
+    {% else %}
+        {# Inicio una matriu dinàmica Grid tipica de bootstrap ajustant l'arquitectura del quadre #}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            {# Obtenc de l'objecte totes les imatges previament parsejades. #}
+            {% for product in products %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+                        {# Verifico si en tinc imatge a dalt. #}
+                        {% if product.image %}
+                            <img src="{{ product.image }}" class="card-img-top" alt="{{ product.title }}" style="height: 220px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-light text-muted d-flex align-items-center justify-content-center" style="height: 220px;">
+                                <i class="bi bi-image fs-1 opacity-25"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title text-truncate fw-bold mb-2">{{ product.title }}</h5>
+                            <div class="text-muted small mb-2 d-flex justify-content-between">
+                                {# M'aprofito que hi ha assignat "User" (app.user / product.owner) doncs Twig l'identifica ja sota objecte propietari a name. #}
+                                <span><i class="bi bi-person"></i> {{ product.owner.name }}</span>
+                                <span>{{ product.createdAt|date('d/m/Y') }}</span>
+                            </div>
+                            {# Jo preformatejo una màxim text limitador a la descripció visual. Així en 90 lletres queda com punts sense embrutar. #}
+                            <p class="card-text small text-muted mb-3 flex-grow-1">{{ product.description|slice(0, 90) ~ (product.description|length > 90 ? '...' : '') }}</p>
+                            
+                            {# L'espai que empenta fins al lloc més baix amb duresa amb mt-auto l'alineament gràcies al flex-column. #}
+                            <div class="mt-auto">
+                                {# Passo un petit filtre al preu (€) per visualitzar bé els decimals. #}
+                                <div class="fs-4 fw-bold text-success mb-3">{{ product.price|number_format(2, ',', '.') }} €</div>
+                                
+                                <div class="d-grid gap-2">
+                                    <a href="{{ path('app_product_show', {'id': product.id}) }}" class="btn btn-outline-primary btn-sm rounded-pill fw-semibold"><i class="bi bi-eye"></i> Veure Mès</a>
+                                    
+                                    {# Aquesta línia restringeix i obre pas solament als MEUS botons personalitzats si és vàlid (i jo vinc de meus productes per la opció). #}
+                                    {% if show_actions|default(false) and app.user and product.owner == app.user %}
+                                        <div class="btn-group w-100 mt-1">
+                                            <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn btn-warning btn-sm" title="Editar"><i class="bi bi-pencil"></i></a>
+                                            {# El formulari en fals per forçar l'esborrat DELETE de Symfony demanant certesa a l'executar gràcies al js 'confirm'  #}
+                                            <form method="post" action="{{ path('app_product_delete', {'id': product.id}) }}" class="w-50" onsubmit="return confirm('Segur que vols esborrar aquest producte?');">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
+                                                <button class="btn btn-danger btn-sm w-100 rounded-start-0" style="border-top-left-radius: 0; border-bottom-left-radius: 0;" title="Esborrar"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,63 @@
+{# Afegeixo l'arrel de plantilles #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Iniciar Sessió - SymfoPop{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-4">
+                <h1 class="h3 mb-4 fw-bold text-center text-primary">Iniciar Sessió</h1>
+                
+                {# Defineixo directament la mètode simple predeterminat a formulari del propi component Authenticator POST. #}
+                <form method="post">
+                    {# Mostro errors retornats d'inici de sessió defectuosos a un block groc alert-danger #}
+                    {% if error %}
+                        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                    {% endif %}
+
+                    {# Si no ho saps però sí tens compte encès aviso directament... (per sort ja està restringit al controller i et portarà al Home si ja ets-hi, però això compleix les bones regles generals d'una aplicació symfony si ho visualitzes d'esquenes) #}
+                    {% if app.user %}
+                        <div class="mb-3">
+                            Has iniciat sessió com a {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Tancar sessió</a>
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="inputEmail" class="form-label text-muted fw-semibold">Correu electrònic</label>
+                        {# Reincorporo automàticament aquells detalls ja inserits per no obligar a tornar-ho a picotejar #}
+                        <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control form-control-lg bg-light" autocomplete="email" required autofocus>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="inputPassword" class="form-label text-muted fw-semibold">Contrasenya</label>
+                        {# Es ocult doncs és el mètode password el tipus d'entrada visual d'html d'aquest caixetí text #}
+                        <input type="password" name="password" id="inputPassword" class="form-control form-control-lg bg-light" autocomplete="current-password" required>
+                    </div>
+
+                    {# Aquest és el meu truc del token ocult (Hidden) en tot form! És imprescindible contra atacs malalts #}
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                    <div class="mb-4 form-check">
+                        {# Caixa que en arribar a Symfony activarà "Remember Me" Badge per no demanar més passwords el 1 setmana següent! #}
+                        <input type="checkbox" name="_remember_me" class="form-check-input" id="rememberMe">
+                        <label class="form-check-label text-muted" for="rememberMe">Recorda'm en aquest equip</label>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button class="btn btn-lg btn-primary fw-bold" type="submit">
+                            Iniciar Sessió
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-4">
+                    {# Simplement em dedico a cridar la pàgina de registrar si vull per afavorir l'interfície UX #}
+                    <span class="text-muted">No tens compte?</span> <a href="{{ path('app_register') }}" class="text-decoration-none fw-bold">Registra't ara</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

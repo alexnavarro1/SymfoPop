@@ -1,0 +1,57 @@
+{# Afegeixo l'arrel de plantilles #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Registrar-se - SymfoPop{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-4">
+                <h1 class="h3 mb-4 fw-bold text-center text-primary">Crea un Compte</h1>
+
+                {# Demano a Twig que posi totes les etiquetes form previament i els seus propis requeriments i tokens sense fer cap manual. #}
+                {{ form_start(registrationForm, {'attr': {'class': 'needs-validation'}}) }}
+                    
+                    <div class="mb-3">
+                        {# Assigno cada quadre un label superior i els errors en petitet fets al meu costat si no acato res de l'Assert (com no escriure mai un nom) #}
+                        {{ form_label(registrationForm.name, null, {'label_attr': {'class': 'form-label text-muted fw-semibold'}}) }}
+                        {{ form_widget(registrationForm.name, {'attr': {'class': 'form-control form-control-lg bg-light'}}) }}
+                        <div class="text-danger small mt-1">{{ form_errors(registrationForm.name) }}</div>
+                    </div>
+
+                    <div class="mb-3">
+                        {# Posaré obligatoriament correus per no posar caràcters per d'amagar #}
+                        {{ form_label(registrationForm.email, null, {'label_attr': {'class': 'form-label text-muted fw-semibold'}}) }}
+                        {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control form-control-lg bg-light'}}) }}
+                        <div class="text-danger small mt-1">{{ form_errors(registrationForm.email) }}</div>
+                    </div>
+
+                    <div class="mb-3">
+                        {# Un cop més... poso l'obligatori dels minims lletres. Ací es diu "plainPassword" per que després al controller l'amagui ràpid. #}
+                        {{ form_label(registrationForm.plainPassword, null, {'label_attr': {'class': 'form-label text-muted fw-semibold'}}) }}
+                        {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control form-control-lg bg-light'}}) }}
+                        <div class="text-danger small mt-1">{{ form_errors(registrationForm.plainPassword) }}</div>
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        {# Això demostro els Terms & Conditions simples sense els qualse no passo a formar el Submit d'èxit, tot requerit a BDD Fals! #}
+                        {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'form-check-input'}}) }}
+                        {{ form_label(registrationForm.agreeTerms, null, {'label_attr': {'class': 'form-check-label text-muted'}}) }}
+                        <div class="text-danger small mt-1">{{ form_errors(registrationForm.agreeTerms) }}</div>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-lg btn-success fw-bold">Registrar-se</button>
+                    </div>
+                {{ form_end(registrationForm) }}
+
+                <div class="text-center mt-4">
+                    {# Et permet emportar a la petició contrària que vas veure abans des de qualsevol pàgina. Si em canso de donar-me compte. #}
+                    <span class="text-muted">Ja tens un compte?</span> <a href="{{ path('app_login') }}" class="text-decoration-none fw-bold">Inicia sessió aquí</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
